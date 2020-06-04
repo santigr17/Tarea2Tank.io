@@ -23,35 +23,95 @@ gameLoop:
 	mov di, player
     call drawEntity
 
-; PLAYER DRAWING CODE
-	; mov si, [player]   ;get animation
-	; mov ax, [player+6] ;get index within animation
-	; xor dx,dx
-	; div word [si+2]    ; animation time % time of full animation
-	; mov ax, dx
-	; xor dx, dx
-	; div word [si]      ; (animation time % time of full animation) /  time of one frame
-	; add ax, ax         ; index*2 because image address is a word
+	mov di, enemy
+    call drawEntity
 	
-	; add si, 4          ;skip first two words of structure
-	; add si, ax		   ;add the offset to the frame
-	; mov si, [si]       ;set the image parameter to the image referenced in the frame
-	
-	; ; mov ax, 80/2 - 9/2 - 1      ;center player image
-	; ; mov bx, 50/2 - 12/2 - 1     ;center player image
-	; ;mov cx, [player+2]      ;dibuja relativamente x
-    ; ;mov dx, [player+4]
-	; call drawImage
-	; ; END OF PLAYER DRAWING CODE
-	
+	call moveEnemy
+
 	call copyBufferOver ;draw frame to screen
 	
 	call gameControls ;handle control logic
 	
 jmp gameLoop
 
-
 jmp $
+
+moveEnemy:
+	pusha
+	mov di, enemy		; Seleccionamos al enemigo, meter un loop para varios
+	mov ax, [di+8]		; seleccionamos el contador de activar de enemy
+	sub ax, 20			; Cada 20 llamadas de gameloop se mueve el enemigo
+		jz .active
+	inc word [di+8]
+	popa
+	ret
+
+	.active:
+		mov cx, word [di+2] ;set cx to enemy x
+		mov dx, word [di+4] ;set dx to enemy z
+		jmp .move
+	.move:
+		mov bx, word [di+10]	;direction of movement
+		cmp bx, 0 					;0 -> derecha
+			jne .d1
+			cmp cx,0x0+75
+				jge .turnUp
+			inc cx
+			mov bp, enemyImg_right
+			jg .back
+		.d1:
+			cmp bx, 1 ;try to move x-1 if 'a' is pressed and set animation accordingly, test other cases otherwise
+			jne .d2
+			cmp cx,0x3
+				jnge .turnDown
+			dec cx
+			mov bp, enemyImg_left
+			jg .back
+		.d2:
+			cmp bx, 2 ;try to move z-1 if 'w' is pressed and set animation accordingly, test other cases otherwise
+			jne .d3
+			cmp dx,0x2
+				jnge .turnLeft
+			dec dx
+			mov bp, enemyImg_back
+			jg .back
+		.d3:
+			cmp dx,0x0+45
+				jge .turnRight
+			inc dx
+			mov bp, enemyImg_front
+			jg .back
+			
+		.back:
+			mov word [di]   ,bp  ;update the animation in use
+			mov word [di+2] ,cx  ;update x pos
+			mov word [di+4] ,dx  ;update y pos
+			mov word [di+8] ,0  ;update active count to 0
+			call checkForCollision
+			popa                 ;reload old register state
+			ret
+		
+		.turnRight:
+			mov word [di+10], 0  ;update y pos
+			jmp .move
+		.turnLeft:
+			inc word [di+10]
+			jmp .move
+		.turnUp:
+			inc word [di+10]
+			jmp .move
+		.turnDown:
+			inc word [di+10]
+			jmp .move
+		
+		
+		
+
+
+		
+
+
+
 
 
 drawEntity:
@@ -69,7 +129,9 @@ drawEntity:
 ;di = entity, cx = new_xpos, dx = new_zpos, bp = new animation
 checkForCollision:
 	pusha                   ;save current state
+	push si 				;save si for lateR NO ESTOY SEGURO DE QUE ESTE BIEN
 	mov si, entityArray-2   ;set si to entityArray (-2 because we increment at the start of the loop)
+
 	.whileLoop:
 	add si, 2           ;set si to the next entry in the entityArray
 	mov bx, word [si]   ;read entityArray entry
@@ -105,8 +167,8 @@ checkForCollision:
 	
 	jmp .whileLoop         ;repeat for all entities in array
 	.whileEscape:
-	
-	inc word [player+6]  ;update animation if moving
+	pop si					;NO ESTOY SEGURO QUE SEA ADECUADO
+	inc word [si+6]  ;update animation if moving
 	mov word [di]   ,bp  ;update the animation in use
 	mov word [di+2] ,cx  ;update x pos
 	mov word [di+4] ,dx  ;update y pos
@@ -161,7 +223,18 @@ entityArray:
 			dw player
 			dw box
 			dw box2
+			dw enemy
 			dw 0
+
+
+enemy:
+enemy_Anim dw enemyImg_front          	;puntero a animacion
+enemy_PosX dw 0x15                      ;pos X
+enemy_PosZ dw 0x15                      ;pos Z
+enemy_AnimC dw 0                       	;animation counter
+enemy_act	dw 0						;activation counter
+enemy_dir	dw 0						;activation counter
+
 
 
 player:
@@ -185,41 +258,56 @@ box_PosZ2 dw 0x0+45                    ;brick pos z
 box_AnimC2 dw 0                      ;counter animacion
 
 
+
+enemyImg_front:
+	dw 1
+	dw 1
+	dw enemyImg_front_0
+	dw 0
+
+enemyImg_back:
+	dw 1
+	dw 1
+	dw enemyImg_back_0
+	dw 0
+
+enemyImg_left:
+	dw 1
+	dw 1
+	dw enemyImg_left_0
+	dw 0
+
+enemyImg_right:
+	dw 1
+	dw 1
+	dw enemyImg_right_0
+	dw 0
+
+
+
 ;animation structure
 playerImg_front:
-	dw 5
-	dw 20
-	dw playerImg_front_0
-	dw playerImg_front_0
-	dw playerImg_front_0
+	dw 1
+	dw 1
 	dw playerImg_front_0
 	dw 0
 	
 playerImg_back:
-    dw 5
-	dw 20
-	dw playerImg_back_0
-	dw playerImg_back_0
-	dw playerImg_back_0
+    dw 1
+	dw 1
 	dw playerImg_back_0
 	dw 0
 	
 playerImg_right:
-    dw 5
-	dw 20
-	dw playerImg_right_0
-	dw playerImg_right_0
-	dw playerImg_right_0
+    dw 1
+	dw 1
 	dw playerImg_right_0
 	dw 0
 	
 	
 playerImg_left:
-	dw 5
-	dw 20
-	dw playerImg_left_0
-	dw playerImg_left_0
-	dw playerImg_left_0
+	dw 1
+	dw 1
 	dw playerImg_left_0
 	dw 0
 
@@ -235,6 +323,12 @@ playerImg_front_0 incbin "img/IzV.bin"
 playerImg_back_0  incbin "img/DeV.bin"
 playerImg_right_0 incbin "img/ArV.bin"
 playerImg_left_0  incbin "img/AbV.bin"
+
+enemyImg_front_0 incbin "img/IzD.bin"
+enemyImg_back_0  incbin "img/DeD.bin"
+enemyImg_right_0 incbin "img/ArD.bin"
+enemyImg_left_0  incbin "img/AbD.bin"
+
 boxImg_0          incbin "img/brick.bin"
 
 
