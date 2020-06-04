@@ -10,34 +10,39 @@ gameLoop:
     call resetBuffer        ;resetea la pantalla llamada desde buffer.asm
 
     ; DRAW A BRICK
-    mov cx, [player+2]      ;dibuja relativamente x
-    mov dx, [player+4]      ;
+    ;mov cx, [player+2]      ;dibuja relativamente x
+    ;mov dx, [player+4]      ;
     mov di, box
     call drawEntity
 
-	mov cx, [player+2]      ;dibuja relativamente x
-    mov dx, [player+4]      ;
+	;mov cx, [player+2]      ;dibuja relativamente x
+    ;mov dx, [player+4]      ;
     mov di, box2
     call drawEntity
 
+	mov di, player
+    call drawEntity
+
 ; PLAYER DRAWING CODE
-	mov si, [player]   ;get animation
-	mov ax, [player+6] ;get index within animation
-	xor dx,dx
-	div word [si+2]    ; animation time % time of full animation
-	mov ax, dx
-	xor dx, dx
-	div word [si]      ; (animation time % time of full animation) /  time of one frame
-	add ax, ax         ; index*2 because image address is a word
+	; mov si, [player]   ;get animation
+	; mov ax, [player+6] ;get index within animation
+	; xor dx,dx
+	; div word [si+2]    ; animation time % time of full animation
+	; mov ax, dx
+	; xor dx, dx
+	; div word [si]      ; (animation time % time of full animation) /  time of one frame
+	; add ax, ax         ; index*2 because image address is a word
 	
-	add si, 4          ;skip first two words of structure
-	add si, ax		   ;add the offset to the frame
-	mov si, [si]       ;set the image parameter to the image referenced in the frame
+	; add si, 4          ;skip first two words of structure
+	; add si, ax		   ;add the offset to the frame
+	; mov si, [si]       ;set the image parameter to the image referenced in the frame
 	
-	mov ax, 80/2 - 9/2 - 1      ;center player image
-	mov bx, 50/2 - 12/2 - 1     ;center player image
-	call drawImage
-	; END OF PLAYER DRAWING CODE
+	; ; mov ax, 80/2 - 9/2 - 1      ;center player image
+	; ; mov bx, 50/2 - 12/2 - 1     ;center player image
+	; ;mov cx, [player+2]      ;dibuja relativamente x
+    ; ;mov dx, [player+4]
+	; call drawImage
+	; ; END OF PLAYER DRAWING CODE
 	
 	call copyBufferOver ;draw frame to screen
 	
@@ -53,11 +58,11 @@ drawEntity:
 	mov si, word [di]   ;get animation
 	mov si, word [si+4] ;get first frame of animation
 	mov ax, word [di+2] ;get entity x
-	sub ax, cx          ;subtract the position of the player from the x position
-	add ax, 80/2 - 9/2 - 1  ;relative to screen image drawing code for x position
+	;sub ax, cx          ;subtract the position of the player from the x position
+	;add ax, 80/2 - 9/2 - 1  ;relative to screen image drawing code for x position
 	mov bx, word [di+4] ;get entity y
-	sub bx, dx          ;subtract the position of the player from the z position
-	add bx, 50/2 - 12/2 - 1 ;relative to screen image drawing code for z position
+	;sub bx, dx          ;subtract the position of the player from the z position
+	;add bx, 50/2 - 12/2 - 1 ;relative to screen image drawing code for z position
 	call drawImage      ;draw image to buffer
 	ret
 
@@ -74,29 +79,29 @@ checkForCollision:
 	jz .whileLoop
 	
 	mov ax, word [bx+2] ;ax = entity x
-	sub ax, 8           ;subtract 8 because of hitbox
+	sub ax, 5           ;subtract 8 because of hitbox
 	cmp ax, cx ; (entityX-8 <= playerX)
 		jg .whileLoop
 		
 	mov ax, word [bx+2] ;ax = entity x
-	add ax, 8           ;add 8 because of hitbox
+	add ax, 5           ;add 8 because of hitbox
 	cmp ax, cx ; (entityX+8 > playerX)
 		jle .whileLoop
 
 	mov ax, word [bx+4] ;ax = entity z
-	sub ax, 10          ;subtract 10 because of hitbox
+	sub ax, 5          ;subtract 10 because of hitbox
 	cmp ax, dx ; (entityZ-10 <= playerZ)
 		jg .whileLoop
 		
 	mov ax, word [bx+4] ;ax = entity z
-	add ax, 9           ;subtract 9 because of hitbox
+	add ax, 5           ;subtract 9 because of hitbox
 	cmp ax, dx ; (entityZ+9 > playerZ)
 		jle .whileLoop
 		
 	;if we reach this point => actual collision
 	mov cx, [di+2]         ;set new x pos to current x pos => no movement
 	mov dx, [di+4]         ;set new z pos to current z pos => no movement
-	mov word [player+6], 0 ;reset animation counter
+	;mov word [player+6], 0 ;reset animation counter
 	
 	jmp .whileLoop         ;repeat for all entities in array
 	.whileEscape:
@@ -161,22 +166,22 @@ entityArray:
 
 player:
 player_Anim dw playerImg_front          ;puntero a animacion
-player_PosX dw 0                        ;pos X
-player_PosZ dw 0                        ;pos Z
+player_PosX dw 0x35                        ;pos X
+player_PosZ dw 0x25                        ;pos Z
 player_AnimC dw 0                       ;animation counter
 
 ;brick estructura
 box:
 box_Anim dw boxImg                  ;puntero a la animacion
-box_PosX dw 0x10                    ;brick pos x
-box_PosZ dw 0x10                    ;brick pos z
+box_PosX dw 0x0                    ;brick pos x
+box_PosZ dw 0x3                    ;brick pos z
 box_AnimC dw 0                      ;counter animacion
 
 
 box2:
 box_Anim2 dw boxImg                  ;puntero a la animacion
-box_PosX2 dw 0x10+6                    ;brick pos x
-box_PosZ2 dw 0x10                    ;brick pos z
+box_PosX2 dw 0x0+75                    ;brick pos x
+box_PosZ2 dw 0x0+45                    ;brick pos z
 box_AnimC2 dw 0                      ;counter animacion
 
 
