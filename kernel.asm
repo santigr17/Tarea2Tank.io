@@ -15,6 +15,11 @@ gameLoop:
     mov di, box
     call drawEntity
 
+	mov cx, [player+2]      ;dibuja relativamente x
+    mov dx, [player+4]      ;
+    mov di, box2
+    call drawEntity
+
 ; PLAYER DRAWING CODE
 	mov si, [player]   ;get animation
 	mov ax, [player+6] ;get index within animation
@@ -150,7 +155,9 @@ checkKey:
 entityArray:
 			dw player
 			dw box
+			dw box2
 			dw 0
+
 
 player:
 player_Anim dw playerImg_front          ;puntero a animacion
@@ -164,6 +171,14 @@ box_Anim dw boxImg                  ;puntero a la animacion
 box_PosX dw 0x10                    ;brick pos x
 box_PosZ dw 0x10                    ;brick pos z
 box_AnimC dw 0                      ;counter animacion
+
+
+box2:
+box_Anim2 dw boxImg                  ;puntero a la animacion
+box_PosX2 dw 0x10+6                    ;brick pos x
+box_PosZ2 dw 0x10                    ;brick pos z
+box_AnimC2 dw 0                      ;counter animacion
+
 
 ;animation structure
 playerImg_front:
@@ -202,6 +217,7 @@ playerImg_left:
 	dw playerImg_left_0
 	dw playerImg_left_0
 	dw 0
+
 boxImg:
 	dw 1            ;time per frames
 	dw 1            ;time of animation
