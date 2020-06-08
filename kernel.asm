@@ -8,28 +8,44 @@ call initGraphics
 ;loop principal
 gameLoop:
     call resetBuffer        ;resetea la pantalla llamada desde buffer.asm
+	
 
     ; DRAW A BRICK
     ;mov cx, [player+2]      ;dibuja relativamente x
     ;mov dx, [player+4]      ;
-    mov di, box
-    call drawEntity
+    ;mov di, box
+    ;call drawEntity
 
 	;mov cx, [player+2]      ;dibuja relativamente x
     ;mov dx, [player+4]      ;
-    mov di, box2
-    call drawEntity
+    ;mov di, box2
+    ;call drawEntity
+	call drawMap
 
 	mov di, player
     call drawEntity
-
-	mov di, enemy
-    call drawEntity
+		
+	mov dx, [shooting]
+	sub dx, 1
+	jnz .noBala
+		;mov di, enemy
+		;call drawEntity
+		mov di, bullet
+		call drawEntity
+		
+	.noBala:
 	
+	mov di, enemy
+	call drawEntity
+
 	call moveEnemy
 
+	mov dx, [shooting]
+	sub dx, 1
+	jnz .noMoveBala
+		call moveBala
+	.noMoveBala:
 	call copyBufferOver ;draw frame to screen
-	
 	call gameControls ;handle control logic
 	
 jmp gameLoop
@@ -40,7 +56,7 @@ moveEnemy:
 	pusha
 	mov di, enemy		; Seleccionamos al enemigo, meter un loop para varios
 	mov ax, [di+8]		; seleccionamos el contador de activar de enemy
-	sub ax, 20			; Cada 20 llamadas de gameloop se mueve el enemigo
+	sub ax, 5			; Cada 20 llamadas de gameloop se mueve el enemigo
 		jz .active
 	inc word [di+8]
 	popa
@@ -49,7 +65,6 @@ moveEnemy:
 	.active:
 		mov cx, word [di+2] ;set cx to enemy x
 		mov dx, word [di+4] ;set dx to enemy z
-		jmp .move
 	.move:
 		mov bx, word [di+10]	;direction of movement
 		cmp bx, 0 					;0 -> derecha
@@ -87,7 +102,7 @@ moveEnemy:
 			mov word [di+2] ,cx  ;update x pos
 			mov word [di+4] ,dx  ;update y pos
 			mov word [di+8] ,0  ;update active count to 0
-			call checkForCollision
+			;call checkForCollision
 			popa                 ;reload old register state
 			ret
 		
@@ -107,22 +122,80 @@ moveEnemy:
 		
 		
 
+moveBala:
 
+	mov cx, word [bullet_PosX] ;set cx to bullet x
+	mov dx, word [bullet_PosZ] ;set dx to bullet z
+	mov bx, word [bullet_dir]	;direction of movement
+	cmp bx, 0 					;0 -> derecha
+		jne .d1
+		cmp cx,0x0+75
+			jge .destroy
+		inc cx
+		jg .back
+	.d1:
+		cmp bx, 1 ;try to move x-1 if 'a' is pressed and set animation accordingly, test other cases otherwise
+		jne .d2
+		cmp cx,0x3
+			jnge .destroy
+		dec cx
+		jg .back
+	.d2:
+		cmp bx, 2 ;try to move z-1 if 'w' is pressed and set animation accordingly, test other cases otherwise
+		jne .d3
+		cmp dx,0x2
+			jnge .destroy
+		dec dx
+		jg .back
+	.d3:
+		cmp dx,0x0+45
+			jge .destroy
+		inc dx
+		jg .back
 		
+	.back:
+		mov word [bullet_PosX] ,cx  ;update x pos
+		mov word [bullet_PosZ] ,dx  ;update y pos
+		ret
+	.destroy:
+		mov word [shooting] ,0  ;update y pos
+		ret
+	
 
 
 
+drawMap:
+	mov di, box
+	mov si, word [di]   ;get animation
+	mov si, word [si+4] ;get first frame of animation
+	
+	mov ax, word [map] ;get entity x
+	mov bx, word [map+2] ;get entity y
+	call drawImage      ;draw image to buffer
+	
+	mov ax, word [map+4] ;get entity x
+	mov bx, word [map+6] ;get entity y
+	call drawImage      ;draw image to buffer
+
+	mov ax, word [map+8] ;get entity x
+	mov bx, word [map+10] ;get entity y
+	call drawImage      ;draw image to buffer
+
+	mov ax, word [map+12] ;get entity x
+	mov bx, word [map+14] ;get entity y
+	call drawImage      ;draw image to buffer
+	
+	mov ax, word [map+16] ;get entity x
+	mov bx, word [map+18] ;get entity y
+	call drawImage      ;draw image to buffer
+	ret
 
 
 drawEntity:
 	mov si, word [di]   ;get animation
 	mov si, word [si+4] ;get first frame of animation
 	mov ax, word [di+2] ;get entity x
-	;sub ax, cx          ;subtract the position of the player from the x position
-	;add ax, 80/2 - 9/2 - 1  ;relative to screen image drawing code for x position
 	mov bx, word [di+4] ;get entity y
-	;sub bx, dx          ;subtract the position of the player from the z position
-	;add bx, 50/2 - 12/2 - 1 ;relative to screen image drawing code for z position
 	call drawImage      ;draw image to buffer
 	ret
 
@@ -182,24 +255,45 @@ gameControls:
 		mov cx, word [player_PosX] ;set cx to player x
 		mov dx, word [player_PosZ] ;set dx to player z
 		mov bp, [player]           ;set bp to current animation
-		cmp ah, 0x20 ;try to move x+1 if 'd' is pressed and set animation accordingly, test other cases otherwise
-		jne .n1
-		inc cx
-		mov bp, playerImg_right
-		.n1: cmp ah, 0x1e ;try to move x-1 if 'a' is pressed and set animation accordingly, test other cases otherwise
-		jne .n2
-		dec cx
-		mov bp, playerImg_left
-		.n2: cmp ah, 0x11 ;try to move z-1 if 'w' is pressed and set animation accordingly, test other cases otherwise
-		jne .n3
-		dec dx
-		mov bp, playerImg_back
-		.n3: cmp ah, 0x1F ;try to move z+1 if 's' is pressed and set animation accordingly, test other cases otherwise
-		jne .n4
-		inc dx
-		mov bp, playerImg_front
-		.n4:
-		call checkForCollision ;check if player would collide on new position, if not change position to new position
+		; p 0x19
+		; cmp
+		; .fire
+		cmp ah, 0x39
+		jne .movDr
+		mov word[shooting], 1
+		mov word[bullet_PosX], cx
+		mov word[bullet_PosZ], dx
+
+		; DERECHA (D)
+		.movDr:
+			cmp ah, 0x20 ;try to move x+1 if 'd' is pressed and set animation accordingly, test other cases otherwise
+			jne .movIz
+			inc cx
+			mov bp, playerImg_right
+			mov word[bullet_dir], 0
+		; IZQUIERDA (A)
+		.movIz:
+			cmp ah, 0x1e ;try to move x-1 if 'a' is pressed and set animation accordingly, test other cases otherwise
+			jne .movAr
+			dec cx
+			mov bp, playerImg_left
+			mov word[bullet_dir], 1
+		; ARRIBA (W)
+		.movAr:
+			cmp ah, 0x11 ;try to move z-1 if 'w' is pressed and set animation accordingly, test other cases otherwise
+			jne .movAb
+			dec dx
+			mov bp, playerImg_back
+			mov word[bullet_dir], 2
+		; ABAJO (S)
+		.movAb:
+			cmp ah, 0x1F ;try to move z+1 if 's' is pressed and set animation accordingly, test other cases otherwise
+			jne .end
+			inc dx
+			mov bp, playerImg_front
+			mov word[bullet_dir], 3
+		.end:
+			call checkForCollision ;check if player would collide on new position, if not change position to new position
 		
 	.nokey:
 	ret
@@ -225,37 +319,60 @@ entityArray:
 			dw box2
 			dw enemy
 			dw 0
-
-
+map:; Bloque 0
+	dw 0
+	dw 3
+	; Bloque 1
+	dw 0
+	dw 8
+	; Bloque 2
+	dw 0
+	dw 13
+	; Bloque 3
+	dw 0
+	dw 18
+	; Bloque 4
+	dw 0
+	dw 23
+	
 enemy:
-enemy_Anim dw enemyImg_front          	;puntero a animacion
-enemy_PosX dw 0x15                      ;pos X
-enemy_PosZ dw 0x15                      ;pos Z
-enemy_AnimC dw 0                       	;animation counter
-enemy_act	dw 0						;activation counter
-enemy_dir	dw 0						;activation counter
+	enemy_Anim dw enemyImg_front          	;puntero a animacion
+	enemy_PosX dw 0x15                      ;pos X
+	enemy_PosZ dw 0x15                      ;pos Z
+	enemy_AnimC dw 0                       	;animation counter
+	enemy_act	dw 0						;activation counter
+	enemy_dir	dw 0						;direction counter
 
 
 
 player:
-player_Anim dw playerImg_front          ;puntero a animacion
-player_PosX dw 0x35                        ;pos X
-player_PosZ dw 0x25                        ;pos Z
-player_AnimC dw 0                       ;animation counter
+	player_Anim dw playerImg_front          ;puntero a animacion
+	player_PosX dw 0x35                        ;pos X
+	player_PosZ dw 0x25                        ;pos Z
+	player_AnimC dw 0                       ;animation counter
+	shooting dw 0
+
+bullet:
+	bullet_Anim dw bulletImg                  ;puntero a la animacion
+	bullet_PosX dw 0                   ;brick pos x
+	bullet_PosZ dw 0                    ;brick pos z
+	bullet_AnimC dw 0                     ;counter animacion
+	bullet_dir dw 0
+
 
 ;brick estructura
 box:
-box_Anim dw boxImg                  ;puntero a la animacion
-box_PosX dw 0x0                    ;brick pos x
-box_PosZ dw 0x3                    ;brick pos z
-box_AnimC dw 0                      ;counter animacion
+	box_Anim dw boxImg                  ;puntero a la animacion
+	box_PosX dw 0x0                    ;brick pos x
+	box_PosZ dw 0x3                    ;brick pos z
+	box_AnimC dw 0                      ;counter animacion
 
 
 box2:
-box_Anim2 dw boxImg                  ;puntero a la animacion
-box_PosX2 dw 0x0+75                    ;brick pos x
-box_PosZ2 dw 0x0+45                    ;brick pos z
-box_AnimC2 dw 0                      ;counter animacion
+	box_Anim2 dw boxImg                  ;puntero a la animacion
+	box_PosX2 dw 0x0+75                    ;brick pos x
+	box_PosZ2 dw 0x0+45                    ;brick pos z
+	box_AnimC2 dw 0                      ;counter animacion
 
 
 
@@ -318,6 +435,13 @@ boxImg:
 	dw 0            ;zero end frame
 
 
+bulletImg:
+	dw 1            ;time per frames
+	dw 1            ;time of animation
+	dw bulletImg_0     ;frames
+	dw 0            ;zero end frame
+
+
 
 playerImg_front_0 incbin "img/IzV.bin"
 playerImg_back_0  incbin "img/DeV.bin"
@@ -331,6 +455,7 @@ enemyImg_left_0  incbin "img/AbD.bin"
 
 boxImg_0          incbin "img/brick.bin"
 
+bulletImg_0			incbin "img/bullet.bin"
 
 %assign usedMemory ($-$$)
 %assign usableMemory (512*16)
