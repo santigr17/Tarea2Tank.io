@@ -1,1 +1,5 @@
-*.bin
+kernel.bin
+kernel2.bin
+buffer.bin
+bootloader.bin
+
