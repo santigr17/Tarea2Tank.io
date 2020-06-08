@@ -20,21 +20,22 @@ gameLoop:
     ;mov dx, [player+4]      ;
     ;mov di, box2
     ;call drawEntity
-	call drawMap
-
+	
 	mov di, player
     call drawEntity
-		
+
+	call drawMap
+	
 	mov dx, [shooting]
 	sub dx, 1
 	jnz .noBala
-		;mov di, enemy
-		;call drawEntity
 		mov di, bullet
 		call drawEntity
 		
 	.noBala:
 	
+	
+
 	mov di, enemy
 	call drawEntity
 
@@ -56,7 +57,7 @@ moveEnemy:
 	pusha
 	mov di, enemy		; Seleccionamos al enemigo, meter un loop para varios
 	mov ax, [di+8]		; seleccionamos el contador de activar de enemy
-	sub ax, 5			; Cada 20 llamadas de gameloop se mueve el enemigo
+	sub ax, 15			; Cada 20 llamadas de gameloop se mueve el enemigo
 		jz .active
 	inc word [di+8]
 	popa
@@ -123,7 +124,6 @@ moveEnemy:
 		
 
 moveBala:
-
 	mov cx, word [bullet_PosX] ;set cx to bullet x
 	mov dx, word [bullet_PosZ] ;set dx to bullet z
 	mov bx, word [bullet_dir]	;direction of movement
@@ -164,31 +164,29 @@ moveBala:
 
 
 
+
+
 drawMap:
-	mov di, box
+	mov di, map
+	mov cx, [di+2]
 	mov si, word [di]   ;get animation
 	mov si, word [si+4] ;get first frame of animation
-	
-	mov ax, word [map] ;get entity x
-	mov bx, word [map+2] ;get entity y
-	call drawImage      ;draw image to buffer
-	
-	mov ax, word [map+4] ;get entity x
-	mov bx, word [map+6] ;get entity y
-	call drawImage      ;draw image to buffer
-
-	mov ax, word [map+8] ;get entity x
-	mov bx, word [map+10] ;get entity y
-	call drawImage      ;draw image to buffer
-
-	mov ax, word [map+12] ;get entity x
-	mov bx, word [map+14] ;get entity y
-	call drawImage      ;draw image to buffer
-	
-	mov ax, word [map+16] ;get entity x
-	mov bx, word [map+18] ;get entity y
-	call drawImage      ;draw image to buffer
+	; mov di, [di+4]
+	.drawing:
+	cmp cx, 0
+		jne .drawbrick
 	ret
+	.drawbrick:
+		mov ax, word[di+4]
+		mov bx, word[di+6] ;get entity y
+		push di
+		mov di, map
+		call drawImage
+		pop di
+		add di, 4
+		dec cx
+		jmp .drawing
+	
 
 
 drawEntity:
@@ -203,6 +201,8 @@ drawEntity:
 checkForCollision:
 	pusha                   ;save current state
 	push si 				;save si for lateR NO ESTOY SEGURO DE QUE ESTE BIEN
+	
+	
 	mov si, entityArray-2   ;set si to entityArray (-2 because we increment at the start of the loop)
 
 	.whileLoop:
@@ -319,21 +319,102 @@ entityArray:
 			dw box2
 			dw enemy
 			dw 0
-map:; Bloque 0
+map:
+	map_Anim dw boxImg                  ;puntero a la animacion
+	cant_bricks dw 24
 	dw 0
-	dw 3
-	; Bloque 1
+	dw 4
+	;
 	dw 0
-	dw 8
-	; Bloque 2
+	dw 9
+	;
 	dw 0
-	dw 13
-	; Bloque 3
+	dw 14
+	
 	dw 0
-	dw 18
-	; Bloque 4
+	dw 19
+
+	dw 5
+	dw 19
+	
+	dw 5
+	dw 24
+	
+	dw 5
+	dw 29
+	
 	dw 0
-	dw 23
+	dw 29
+	
+	dw 0
+	dw 34
+	
+	dw 0
+	dw 39
+	
+	dw 0
+	dw 44
+
+	; #### Y ####
+	dw 5
+	dw 44
+	
+	dw 10
+	dw 44
+	
+	dw 15
+	dw 44
+	
+	dw 20
+	dw 44
+	
+	dw 25
+	dw 44
+	
+	dw 30
+	dw 44
+	
+	dw 35
+	dw 44
+	
+	dw 40
+	dw 44
+
+	dw 45
+	dw 44
+	
+	dw 50
+	dw 44
+	
+	dw 55
+	dw 44
+	
+	dw 60
+	dw 44
+
+	dw 65
+	dw 44
+	
+	dw 70
+	dw 44
+
+	dw 75
+	dw 44
+	
+	dw 80
+	dw 44
+	
+	dw 85
+	dw 44
+	
+	dw 90
+	dw 44
+	
+	dw 95
+	dw 44
+	
+	dw 100
+	dw 44
 	
 enemy:
 	enemy_Anim dw enemyImg_front          	;puntero a animacion
@@ -370,8 +451,8 @@ box:
 
 box2:
 	box_Anim2 dw boxImg                  ;puntero a la animacion
-	box_PosX2 dw 0x0+75                    ;brick pos x
-	box_PosZ2 dw 0x0+45                    ;brick pos z
+	box_PosX2 dw 0x0+15                    ;brick pos x
+	box_PosZ2 dw 0x0+15                    ;brick pos z
 	box_AnimC2 dw 0                      ;counter animacion
 
 
@@ -453,7 +534,7 @@ enemyImg_back_0  incbin "img/DeD.bin"
 enemyImg_right_0 incbin "img/ArD.bin"
 enemyImg_left_0  incbin "img/AbD.bin"
 
-boxImg_0          incbin "img/brick.bin"
+boxImg_0          incbin "img/bloque.bin"
 
 bulletImg_0			incbin "img/bullet.bin"
 
