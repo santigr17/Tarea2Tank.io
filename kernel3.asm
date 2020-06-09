@@ -321,168 +321,289 @@ entityArray:
 			dw 0
 map:
 	map_Anim dw boxImg                  ;puntero a la animacion
-	cant_bricks dw 51
+	cant_bricks dw 83
+	;------19
 	dw 0
 	dw 4
 	;1
 	dw 0
-	dw 9
+	dw 7
 	;2
 	dw 0
-	dw 14
+	dw 10
 	;3
 	dw 0
-	dw 19
+	dw 13
 	;4
-	dw 5
-	dw 19
-	;5
-	dw 5
-	dw 24
-	;6
-	dw 5
-	dw 29
-	;7
 	dw 0
-	dw 29
+	dw 16
+	;5
+	dw 0
+	dw 19
+	;6
+	dw 3
+	dw 19
+	;7
+	dw 6
+	dw 19
 	;8
+	dw 6
+	dw 22
+	;9
+	dw 6
+	dw 25
+	;10
+	dw 6
+	dw 28
+	;11
+	dw 3
+	dw 28
+	;12
+	dw 0
+	dw 28
+	;13
+	dw 0
+	dw 31
+	;14
 	dw 0
 	dw 34
-	;9
+	;15
 	dw 0
-	dw 39
-	;10
+	dw 37
+	;16
 	dw 0
-	dw 44
-	;11
+	dw 40
+	;17
+	dw 0
+	dw 43
+	;18
+	dw 0
+	dw 45
+	;19
 
-	dw 0
-	dw 49
-	;12
+	
 
-	; #### Y ####   (12)
-	dw 5
+
+	; #### Y ####   (25)
+	dw 3
 	dw 45
 	;1
-	dw 10
+	dw 6
 	dw 45
 	;2
-	dw 15
+	dw 9
 	dw 45
 	;3
-	dw 20
+	dw 12
 	dw 45
 	;4
-	dw 25
+	dw 15
 	dw 45
 	;5
-	dw 30
+	dw 18
 	dw 45
 	;6
-	dw 35
+	dw 21
 	dw 45
 	;7
-	dw 40
+	dw 24
 	dw 45
 	;8
-	dw 45
+	dw 27
 	dw 45
 	;9
-	dw 50
+	dw 30
 	dw 45
 	;10
-	dw 55
+	dw 33
 	dw 45
 	;11
-	dw 60
+	dw 36
 	dw 45
 	;12
-	dw 65
+	dw 39
 	dw 45
 	;13
-	dw 70
+	dw 42
 	dw 45
 	;14
 
-	dw 75
+	dw 45
 	dw 45
 	;15
 
-;lado izquierdo del mapa  (27)
+	dw 48
+	dw 45
+	;16
+
+	dw 51
+	dw 45
+	;17
+
+	dw 54
+	dw 45
+	;18
+
+	dw 57
+	dw 45
+	;19
+
+	dw 60
+	dw 45
+	;20
+
+	dw 63
+	dw 45
+	;21
+
+	dw 66
+	dw 45
+	;22
+
+	dw 69
+	dw 45
+	;23
+
+	dw 72
+	dw 45
+	;24
+
+	dw 75
+	dw 45
+	;25
+
+;lado izquierdo del mapa  (14)  19 25  44 14 58
 	dw 75
 	dw 4
-	;    1
+	;1
 	dw 75
-	dw 9
-	;    2
+	dw 7
+	;2
 	dw 75
-	dw 14
-	;    3
+	dw 10
+	;3
+	dw 75
+	dw 13
+	;4
+	dw 75
+	dw 16
+	;5
 	dw 75
 	dw 19
-    ;   4
+	;6
 	dw 75
-	dw 24
-	;    5
+	dw 22
+	;7
 	dw 75
-	dw 29
-	;    6
+	dw 25
+	;8
+	dw 75
+	dw 28
+	;9
+	dw 75
+	dw 31
+	;10
 	dw 75
 	dw 34
-	;    7
+	;11
 	dw 75
-	dw 39
-	;   8
+	dw 37
+	;12
 	dw 75
-	dw 44
-	;    9
+	dw 40
+	;13
+	dw 75
+	dw 42
+	;14
 
-; parte arriba del mapa (36)  total 51
-	dw 5
+
+; parte arriba del mapa (25)  total 83
+	dw 3
 	dw 4
-	;  1
-	dw 10
+	;1
+	dw 6
 	dw 4
-	;   2   
+	;2
+	dw 9
+	dw 4
+	;3
+	dw 12
+	dw 4
+	;4
 	dw 15
 	dw 4
-	; 3
-	dw 20
+	;5
+	dw 18
 	dw 4
-	;  4
-	dw 25
+	;6
+	dw 21
 	dw 4
-	;  5
+	;7
+	dw 24
+	dw 4
+	;8
+	dw 27
+	dw 4
+	;9
 	dw 30
 	dw 4
-	; 6
-	dw 35
-	dw 4
-	; 7
-	dw 40
-	dw 4
-	;  8
-	dw 45
-	dw 4
-	; 9
-	dw 50
-	dw 4
-	; 10
-	dw 55
+	;10
+	dw 33
 	dw 4
 	;11
-	dw 60
+	dw 36
 	dw 4
 	;12
-	dw 65
+	dw 39
 	dw 4
 	;13
-	dw 70
+	dw 42
 	dw 4
 	;14
-	dw 75
+
+	dw 45
 	dw 4
 	;15
+
+	dw 48
+	dw 4
+	;16
+
+	dw 51
+	dw 4
+	;17
+
+	dw 54
+	dw 4
+	;18
+
+	dw 57
+	dw 4
+	;19
+
+	dw 60
+	dw 4
+	;20
+
+	dw 63
+	dw 4
+	;21
+
+	dw 66
+	dw 4
+	;22
+
+	dw 69
+	dw 4
+	;23
+
+	dw 72
+	dw 4
+	;24
+
+	dw 75
+	dw 4
+	;25
 
 enemy:
 	enemy_Anim dw enemyImg_front          	;puntero a animacion
@@ -602,7 +723,7 @@ enemyImg_back_0  incbin "img/DeD.bin"
 enemyImg_right_0 incbin "img/ArD.bin"
 enemyImg_left_0  incbin "img/AbD.bin"
 
-boxImg_0          incbin "img/brick.bin"
+boxImg_0          incbin "img/bloque.bin"
 
 bulletImg_0			incbin "img/bullet.bin"
 
