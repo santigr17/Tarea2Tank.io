@@ -349,34 +349,6 @@ checkForStrike:
 	mov word [bullet+4] ,dx  ;update y pos
 	popa                 ;reload old register state
 	ret
-
-colissionsMapa:
-    mov si, word [di]
-    mov di, map3
-    ;CX tiene posición X
-    ;DX tiene posición Z
-    mov bx, [di+2]
-    inc bx 
-    .comparar:
-        dec bx
-        cmp bx, 0
-        jne .compararBrick
-        mov di, word[si]
-    ret
-    
-    .compararBrick:
-        mov ax, word [di+4] ;obtener la pos x del cubo del mapa
-        sub ax, 3           ;subtract 3 because of hitbox
-        cmp ax, cx ; comparar l popaas dos posiciones
-        jg .comparar
-    
-        mov ax, word [di+4] ;axsalirbtract 9 because of hitbox
-        cmp ax, dx ; (entityZ+9 > playerZ)
-        jle .comparar
-        mov cx, [si+2]
-        mov dx, [si+4]
-        ret
-
 drawMap:
 	mov di, map2
 	mov cx, [di+2]
