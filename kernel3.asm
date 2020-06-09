@@ -687,6 +687,46 @@ map:
 	
 
 
+	dw 48
+	dw 4
+	;16
+
+	dw 51
+	dw 4
+	;17
+
+	dw 54
+	dw 4
+	;18
+
+	dw 57
+	dw 4
+	;19
+
+	dw 60
+	dw 4
+	;20
+
+	dw 63
+	dw 4
+	;21
+
+	dw 66
+	dw 4
+	;22
+
+	dw 69
+	dw 4
+	;23
+
+	dw 72
+	dw 4
+	;24
+
+	dw 75
+	dw 4
+	;25
+
 enemy:
 	enemy_Anim dw enemyImg_front          	;puntero a animacion
 	enemy_PosX dw 0x15                      ;pos X
