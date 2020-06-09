@@ -294,7 +294,7 @@ gameControls:
 			mov word[bullet_dir], 3
 		.end:
 			call checkForCollision ;check if player would collide on new position, if not change position to new position
-			;call colissionsMapa
+			call colissionsMapa
 			ret
 	.nokey:
 	ret
@@ -316,8 +316,8 @@ checkKey:
 ;entity array
 entityArray:
 			dw player
-			dw box
-			dw box2
+			;dw box
+			;dw box2
 			dw enemy
 			dw 0
 
@@ -333,25 +333,25 @@ colissionsMapa:
         cmp bx, 0
         jne .compararBrick
         mov di, word[si]
-    ret
-    
+    	ret
     .compararBrick:
-        mov ax, word [di+4] ;obtener la pos x del cubo del mapa
+		add di, 4
+        mov ax, word [di] ;obtener la pos x del cubo del mapa
         sub ax, 3           ;subtract 3 because of hitbox
         cmp ax, cx ; comparar l popaas dos posiciones
         jg .comparar
     
-        mov ax, word [di+4] ;axsalirbtract 9 because of hitbox
+        mov ax, word [di] ;axsalirbtract 9 because of hitbox
 		add ax, 3           ;subtract 3 because of hitbox
         cmp ax, dx ; (entityZ+9 > playerZ)
         jle .comparar
 
-		mov ax, word [di+6] ;obtener la pos x del cubo del mapa
+		mov ax, word [di+2] ;obtener la pos x del cubo del mapa
         sub ax, 3           ;subtract 3 because of hitbox
         cmp ax, cx ; comparar l popaas dos posiciones
         jg .comparar
     
-        mov ax, word [di+6] ;axsalirbtract 9 because of hitbox
+        mov ax, word [di+2] ;axsalirbtract 9 because of hitbox
 		add ax, 3           ;subtract 3 because of hitbox
         cmp ax, dx ; (entityZ+9 > playerZ)
         jle .comparar
