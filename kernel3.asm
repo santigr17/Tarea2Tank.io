@@ -294,7 +294,8 @@ gameControls:
 			mov word[bullet_dir], 3
 		.end:
 			call checkForCollision ;check if player would collide on new position, if not change position to new position
-		
+			;call colissionsMapa
+			ret
 	.nokey:
 	ret
 
@@ -319,338 +320,371 @@ entityArray:
 			dw box2
 			dw enemy
 			dw 0
+
+colissionsMapa:
+    mov si, word [di]
+    mov di, map
+    ;CX tiene posición X
+    ;DX tiene posición Z
+    mov bx, [di+2]
+    inc bx 
+    .comparar:
+        dec bx
+        cmp bx, 0
+        jne .compararBrick
+        mov di, word[si]
+    ret
+    
+    .compararBrick:
+        mov ax, word [di+4] ;obtener la pos x del cubo del mapa
+        sub ax, 3           ;subtract 3 because of hitbox
+        cmp ax, cx ; comparar l popaas dos posiciones
+        jg .comparar
+    
+        mov ax, word [di+4] ;axsalirbtract 9 because of hitbox
+		add ax, 3           ;subtract 3 because of hitbox
+        cmp ax, dx ; (entityZ+9 > playerZ)
+        jle .comparar
+
+		mov ax, word [di+6] ;obtener la pos x del cubo del mapa
+        sub ax, 3           ;subtract 3 because of hitbox
+        cmp ax, cx ; comparar l popaas dos posiciones
+        jg .comparar
+    
+        mov ax, word [di+6] ;axsalirbtract 9 because of hitbox
+		add ax, 3           ;subtract 3 because of hitbox
+        cmp ax, dx ; (entityZ+9 > playerZ)
+        jle .comparar
+
+		mov cx, word[si+2]
+		mov dx, word[si+4]
+
+        ret
 map:
 	map_Anim dw boxImg                  ;puntero a la animacion
 	cant_bricks dw 107
-	dw 0
-	dw 3
-	;1
+	;0 pared lateral izquierda
+		dw 0
+		dw 3
+		;1
 		dw 0
 		dw 6
-	;2
+		;2
 		dw 0
 		dw 9
-	;3
+		;3
 		dw 0
 		dw 12
-	;4
+		;4
 		dw 0
 		dw 15
-	;5
+		;5
 		dw 3
 		dw 15
-	;6
+		;6
 		dw 6
 		dw 15
-	;7
+		;7
 		dw 9
 		dw 15
-	;8
+		;8
 		dw 12
 		dw 15
-	;9
+		;9
 		dw 12
 		dw 18
-	;10
+		;10
 		dw 12
 		dw 21
-	;11
+		;11
 		dw 12
 		dw 24
-	;12
+		;12
 		dw 9
 		dw 24
-	;13
+		;13
 		dw 6
 		dw 24
-	;14
+		;14
 		dw 3
 		dw 24
-	;15
+		;15
 		dw 0
 		dw 24
-	;16
+		;16
 		dw 0
 		dw 27
-	;17
+		;17
 		dw 0
 		dw 30
-	;18
+		;18
 		dw 0
 		dw 33
-	;19
+		;19
 		dw 0
 		dw 36
-	;20
+		;20
 		dw 0
 		dw 39
-	;21
+		;21
 		dw 0
 		dw 42
-	;22
+		;22
 		dw 0
 		dw 45
-	;23
+		;23
 		dw 0
-		dw 48
-	;24
+		dw 48 
+	;24 pared lateral inferior
 		dw 3
 		dw 48
-	;25
+		;25
 		dw 6
 		dw 48
-	;26
+		;26
 		dw 9
 		dw 48
-	;27
+		;27
 		dw 12
 		dw 48
-	;28
+		;28
 		dw 15
 		dw 48
-	;29
+		;29
 		dw 18
 		dw 48
-	;30
+		;30
 		dw 21
 		dw 48
-	;31
+		;31
 		dw 21
 		dw 45
-	;32
+		;32
 		dw 21
 		dw 42
-	;33
+		;33
 		dw 21
 		dw 39
-	;34
+		;34
 		dw 21
 		dw 36
-	;35
+		;35
 		dw 24
 		dw 48
-	;36
+		;36
 		dw 27
 		dw 48
-	;37
+		;37
 		dw 30
 		dw 48
-	;38
+		;38
 		dw 33
 		dw 48
-	;39   
+		;39   
 		dw 36
 		dw 48
-	;40
+		;40
 		dw 39
 		dw 48
-	;41
+		;41
 		dw 42
 		dw 48
-	;42
+		;42
 		dw 45
 		dw 48
-	;43
+		;43
 		dw 48
 		dw 48
-	;44
+		;44
 		dw 51
 		dw 48
-	;45
+		;45
+		dw 51
+		dw 45
+		;46
+		dw 51
+		dw 42
+		;47
+		dw 51
+		dw 39
+		;48
+		dw 51
+		dw 36
+		;49
+		dw 51
+		dw 33
+		;50
 		dw 54
 		dw 48
-	;46
+		;51
 		dw 57
 		dw 48
-	;47 
+		;52 
 		dw 60
 		dw 48
-	;48
+		;53
 		dw 63
 		dw 48
-	;49
+		;54
 		dw 66
 		dw 48
-	;50
+		;55
 		dw 69
 		dw 48
-	;51
+		;56
 		dw 72
 		dw 48
-	;52
+		;57
 		dw 75
 		dw 48
-	;53
+	;58 oared lateral derecha
 		dw 75
 		dw 45
-	;54
+		;59
 		dw 75
 		dw 42
-	;55
+		;60
 		dw 75
 		dw 39
-	;56
+		;61
 		dw 75
 		dw 36
-	;57
+		;62
 		dw 75
 		dw 33
-	;58
+		;63
 		dw 75
 		dw 30
-	;59
+		;64
 		dw 75
 		dw 27
-	;60
+		;65
 		dw 75
 		dw 24
-	;61
+		;66
 		dw 75
 		dw 21
-	;62
+		;67
 		dw 75
 		dw 18
-	;63
+		;68
 		dw 75
 		dw 15
-	;64
+		;69
 		dw 75
 		dw 12
-	;65
+		;70
 		dw 75
 		dw 9
-	;66
+		;71
 		dw 75
 		dw 6
-	;67
+		;72
 		dw 75
 		dw 3
-	;68
+		;73
+		dw 72
+		dw 24
+		;74
+		dw 69
+		dw 24
+		;75
+		dw 66
+		dw 24
+		;76
+		dw 63
+		dw 24
+		;77
+		dw 60
+		dw 24
+	;78 Pared Lateral superior
 		dw 72
 		dw 3
-	;69
+		;79
 		dw 69
 		dw 3
-	;70
+		;80
 		dw 66
 		dw 3
-	;71
+		;81
 		dw 63
 		dw 3
-	;72
+		;82
 		dw 60
 		dw 3
-	;73
+		;83
 		dw 57
 		dw 3
-	;74
+		;84
 		dw 54
 		dw 3
-	;75
+		;85
 		dw 51
 		dw 3
-	;76
+		;86
 		dw 48
 		dw 3
-	;77
+		;87
 		dw 45
 		dw 3
-	;78
+		;88
 		dw 42
 		dw 3
-	;79
+		;89
 		dw 39
 		dw 3
-	;80
+		;90
 		dw 36
 		dw 3
-	;81
+		;91
 		dw 33
 		dw 3
-	;82
+		;92
 		dw 30
 		dw 3
-	;83
+		;93
 		dw 27
 		dw 3
-	;84
+		;94
 		dw 24
 		dw 3
-	;85
+		;95
 		dw 21
 		dw 3
-	;86
+		;96
 		dw 18
 		dw 3
-	;87
+		;97
 		dw 15
 		dw 3
-	;88
+		;98
 		dw 12
 		dw 3
-	;89
+		;99
 		dw 9
 		dw 3
-	;90
+		;100
 		dw 6
 		dw 3
-	;91
+		;101
 		dw 3
-		dw 3
-	;92
-		dw 0
-		dw 3
-	;93
-		
+		dw 3	
+		;102
 		dw 36
 		dw 6
-	;94
+		;103
 		dw 36
 		dw 9
-	;95
+		;104
 		dw 36
 		dw 12
-	;96
+		;105
 		dw 36
 		dw 15
-	;97
+		;106
 		dw 36
 		dw 18
-	;98
-		dw 51
-		dw 45
-	;99
-		dw 51
-		dw 42
-	;100
-		dw 51
-		dw 39
-	;101
-		dw 51
-		dw 36
-	;102
-		dw 51
-		dw 33
-	;103
-		dw 72
-		dw 24
-	;104
-		dw 69
-		dw 24
-	;105
-		dw 66
-		dw 24
-	;106
-		dw 63
-		dw 24
-	;107
-		dw 60
-		dw 24
-
 	
-
-
-
 
 
 enemy:
@@ -665,8 +699,8 @@ enemy:
 
 player:
 	player_Anim dw playerImg_front          ;puntero a animacion
-	player_PosX dw 0x35                        ;pos X
-	player_PosZ dw 0x25                        ;pos Z
+	player_PosX dw 0x39                        ;pos X
+	player_PosZ dw 0x29                        ;pos Z
 	player_AnimC dw 0                       ;animation counter
 	shooting dw 0
 
