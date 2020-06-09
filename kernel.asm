@@ -9,18 +9,6 @@ call initGraphics
 gameLoop:
     call resetBuffer        ;resetea la pantalla llamada desde buffer.asm
 	
-
-    ; DRAW A BRICK
-    ;mov cx, [player+2]      ;dibuja relativamente x
-    ;mov dx, [player+4]      ;
-    ;mov di, box
-    ;call drawEntity
-
-	;mov cx, [player+2]      ;dibuja relativamente x
-    ;mov dx, [player+4]      ;
-    ;mov di, box2
-    ;call drawEntity
-	
 	mov di, player
     call drawEntity
 
@@ -104,7 +92,7 @@ moveEnemy:
 			mov word [di+4] ,dx  ;update y pos
 			mov word [di+8] ,0  ;update active count to 0
 			;call checkForCollision
-			popa                 ;reload old register state
+			;popa                 ;reload old register state
 			ret
 		
 		.turnRight:
