@@ -383,6 +383,7 @@ drawEntity:
 ;di = entity, cx = new_xpos, dx = new_zpos, bp = new animation
 colissionsMapa:
     ;mov si, word [di]
+	;push si
     mov si, map2
     ;CX tiene posición X
     ;DX tiene posición Z
@@ -393,6 +394,7 @@ colissionsMapa:
         cmp bx, 0
         jne .compararBrick
         ;mov di, word[si]
+		;pop si
     	ret
     .compararBrick:
 		add si, 4
