@@ -378,7 +378,7 @@ colissionsMapa:
         ret
 
 drawMap:
-	mov di, map3
+	mov di, map2
 	mov cx, [di+2]
 	mov si, word [di]   ;get animation
 	mov si, word [si+4] ;get first frame of animation
@@ -546,6 +546,8 @@ targetBullet:
 			;dw map			No se si va a pasar
 			dw enemy1
 			dw 0
+
+
 enemy1:
 	enemy_Anim dw enemyImg_front          	;0 puntero a animacion
 	enemy_PosX dw 0x35                      ;2 pos X
@@ -685,7 +687,7 @@ falcon:
 	enemyImg_right_0 incbin "img/ArD.bin"
 	enemyImg_left_0  incbin "img/AbD.bin"
 
-	boxImg_0          incbin "img/brick.bin"
+	boxImg_0          incbin "img/bloque.bin"
 
 	bulletImg_0			incbin "img/bullet.bin"
 
@@ -696,7 +698,7 @@ map:
 	cant_bricks dw 51
 	dw 0			; X
 	dw 4			; Y
-;	dw 0			; Visible Flag
+    ;	dw 0			; Visible Flag
 	;1
 	dw 0
 	dw 9
@@ -950,7 +952,330 @@ map3:
 	dw 21
 	;50
 	;Lado derecho arriba
-
+map2: 
+    map_Anim2 dw boxImg                  ;puntero a la animacion
+	cant_bricks2 dw 107
+	;0 pared lateral izquierda
+		dw 0
+		dw 3
+		;1
+		dw 0
+		dw 6
+		;2
+		dw 0
+		dw 9
+		;3
+		dw 0
+		dw 12
+		;4
+		dw 0
+		dw 15
+		;5
+		dw 3
+		dw 15
+		;6
+		dw 6
+		dw 15
+		;7
+		dw 9
+		dw 15
+		;8
+		dw 12
+		dw 15
+		;9
+		dw 12
+		dw 18
+		;10
+		dw 12
+		dw 21
+		;11
+		dw 12
+		dw 24
+		;12
+		dw 9
+		dw 24
+		;13
+		dw 6
+		dw 24
+		;14
+		dw 3
+		dw 24
+		;15
+		dw 0
+		dw 24
+		;16
+		dw 0
+		dw 27
+		;17
+		dw 0
+		dw 30
+		;18
+		dw 0
+		dw 33
+		;19
+		dw 0
+		dw 36
+		;20
+		dw 0
+		dw 39
+		;21
+		dw 0
+		dw 42
+		;22
+		dw 0
+		dw 45
+		;23
+		dw 0
+		dw 48 
+	;24 pared lateral inferior
+		dw 3
+		dw 48
+		;25
+		dw 6
+		dw 48
+		;26
+		dw 9
+		dw 48
+		;27
+		dw 12
+		dw 48
+		;28
+		dw 15
+		dw 48
+		;29
+		dw 18
+		dw 48
+		;30
+		dw 21
+		dw 48
+		;31
+		dw 21
+		dw 45
+		;32
+		dw 21
+		dw 42
+		;33
+		dw 21
+		dw 39
+		;34
+		dw 21
+		dw 36
+		;35
+		dw 24
+		dw 48
+		;36
+		dw 27
+		dw 48
+		;37
+		dw 30
+		dw 48
+		;38
+		dw 33
+		dw 48
+		;39   
+		dw 36
+		dw 48
+		;40
+		dw 39
+		dw 48
+		;41
+		dw 42
+		dw 48
+		;42
+		dw 45
+		dw 48
+		;43
+		dw 48
+		dw 48
+		;44
+		dw 51
+		dw 48
+		;45
+		dw 51
+		dw 45
+		;46
+		dw 51
+		dw 42
+		;47
+		dw 51
+		dw 39
+		;48
+		dw 51
+		dw 36
+		;49
+		dw 51
+		dw 33
+		;50
+		dw 54
+		dw 48
+		;51
+		dw 57
+		dw 48
+		;52 
+		dw 60
+		dw 48
+		;53
+		dw 63
+		dw 48
+		;54
+		dw 66
+		dw 48
+		;55
+		dw 69
+		dw 48
+		;56
+		dw 72
+		dw 48
+		;57
+		dw 75
+		dw 48
+	;58 oared lateral derecha
+		dw 75
+		dw 45
+		;59
+		dw 75
+		dw 42
+		;60
+		dw 75
+		dw 39
+		;61
+		dw 75
+		dw 36
+		;62
+		dw 75
+		dw 33
+		;63
+		dw 75
+		dw 30
+		;64
+		dw 75
+		dw 27
+		;65
+		dw 75
+		dw 24
+		;66
+		dw 75
+		dw 21
+		;67
+		dw 75
+		dw 18
+		;68
+		dw 75
+		dw 15
+		;69
+		dw 75
+		dw 12
+		;70
+		dw 75
+		dw 9
+		;71
+		dw 75
+		dw 6
+		;72
+		dw 75
+		dw 3
+		;73
+		dw 72
+		dw 24
+		;74
+		dw 69
+		dw 24
+		;75
+		dw 66
+		dw 24
+		;76
+		dw 63
+		dw 24
+		;77
+		dw 60
+		dw 24
+	;78 Pared Lateral superior
+        dw 72
+		dw 3
+		;79
+		dw 69
+		dw 3
+		;80
+		dw 66
+		dw 3
+		;81
+		dw 63
+		dw 3
+		;82
+		dw 60
+		dw 3
+		;83
+		dw 57
+		dw 3
+		;84
+		dw 54
+		dw 3
+		;85
+		dw 51
+		dw 3
+		;86
+		dw 48
+		dw 3
+		;87
+		dw 45
+		dw 3
+		;88
+		dw 42
+		dw 3
+		;89
+		dw 39
+		dw 3
+		;90
+		dw 36
+		dw 3
+		;91
+		dw 33
+		dw 3
+		;92
+		dw 30
+		dw 3
+		;93
+		dw 27
+		dw 3
+		;94
+		dw 24
+		dw 3
+		;95
+		dw 21
+		dw 3
+		;96
+		dw 18
+		dw 3
+		;97
+		dw 15
+		dw 3
+		;98
+		dw 12
+		dw 3
+		;99
+		dw 9
+		dw 3
+		;100
+		dw 6
+		dw 3
+		;101
+		dw 3
+		dw 3	
+		;102
+		dw 36
+		dw 6
+		;103
+		dw 36
+		dw 9
+		;104
+		dw 36
+		dw 12
+		;105
+		dw 36
+		dw 15
+		;106
+		dw 36
+		dw 18
 %assign usedMemory ($-$$)
 %assign usableMemory (512*16)
 %warning [usedMemory/usableMemory] Bytes used
