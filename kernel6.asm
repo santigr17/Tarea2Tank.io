@@ -409,6 +409,46 @@ drawEntity:
 	ret
 
 ;di = entity, cx = new_xpos, dx = new_zpos, bp = new animation
+colissionsMapa:
+    mov si, word [di]
+    mov di, map
+    ;CX tiene posición X
+    ;DX tiene posición Z
+    mov bx, [di+2]
+    inc bx 
+    .comparar:
+        dec bx
+        cmp bx, 0
+        jne .compararBrick
+        mov di, word[si]
+    	ret
+    .compararBrick:
+		add di, 4
+        mov ax, word [di] ;obtener la pos x del cubo del mapa
+        sub ax, 3           ;subtract 3 because of hitbox
+        cmp ax, cx ; comparar l popaas dos posiciones
+        jg .comparar
+    
+        mov ax, word [di] ;axsalirbtract 9 because of hitbox
+		add ax, 3           ;subtract 3 because of hitbox
+        cmp ax, dx ; (entityZ+9 > playerZ)
+        jle .comparar
+
+		mov ax, word [di+2] ;obtener la pos x del cubo del mapa
+        sub ax, 3           ;subtract 3 because of hitbox
+        cmp ax, cx ; comparar l popaas dos posiciones
+        jg .comparar
+    
+        mov ax, word [di+2] ;axsalirbtract 9 because of hitbox
+		add ax, 3           ;subtract 3 because of hitbox
+        cmp ax, dx ; (entityZ+9 > playerZ)
+        jle .comparar
+
+		mov cx, word[si+2]
+		mov dx, word[si+4]
+
+        ret
+
 checkForCollision:
 	pusha                   ;save current state
 	push si 				;save si for lateR NO ESTOY SEGURO DE QUE ESTE BIEN
