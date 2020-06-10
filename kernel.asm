@@ -138,39 +138,48 @@ moveEnemy:
 		mov bx, word [di+10]	;direction of movement
 		cmp bx, 0 				; choque cuadros derecha
 			jne .d1
-			cmp cx,0x0+70
+			mov bp, enemyImg_right
+			cmp cx,76
 				jge .turnUp
 			inc cx
-			mov bp, enemyImg_right
+			call collissionsMapa
+			cmp ax, 0
+				jz .turnUp
 			jg .back
 		.d1:; choque cuadros izquierda
-			cmp bx, 1 ;try to move x-1 if 'a' is pressed and set animation accordingly, test other cases otherwise
+			cmp bx, 2 ;try to move x-1 if 'a' is pressed and set animation accordingly, test other cases otherwise
+			mov bp, enemyImg_left
 			jne .d2
-			cmp cx,0x10
+			cmp cx,0
 				jnge .turnDown
 			dec cx
-			mov bp, enemyImg_left
+			call collissionsMapa
+			cmp ax, 0
+				jz .turnDown
 			jg .back
 		.d2:; choque cuadros arriba
-			cmp bx, 2 ;try to move z-1 if 'w' is pressed and set animation accordingly, test other cases otherwise
+			cmp bx, 1 ;try to move z-1 if 'w' is pressed and set animation accordingly, test other cases otherwise
 			jne .d3
-			cmp dx,0x9
-				jnge .turnLeft
-			dec dx
 			mov bp, enemyImg_back
+			cmp dx,3
+				jnge .turnLeft
+			inc dx
+			call collissionsMapa
+			cmp ax, 0
+				jz .turnLeft
 			jg .back
 		.d3: ;choque cuadros de abajo
-			cmp dx,0x0+40
+			cmp dx,40
 				jge .turnRight
-			inc dx
+			dec dx
 			mov bp, enemyImg_front
+			call collissionsMapa
+			cmp ax, 0
+				jz .turnRight
 			jg .back
-			ret
-
-
-
+			;ret
+		;
 		.checkForEnemy:
-			
 			mov bx, word [player] ;ax = entity x
 			mov ax, word [player_PosX] ;ax = entity x
 			sub ax, 6           ;subtract 5 because of hitbox
@@ -195,10 +204,10 @@ moveEnemy:
 			mov dx, [di+4]
 			.update:
 			ret
-			
+		;
+					
 		.back:
 			call .checkForEnemy
-			; call collissionsMapa
 			mov word [di]   ,bp  ;update the animation in use
 			mov word [di+2] ,cx  ;update x pos
 			mov word [di+4] ,dx  ;update y pos
@@ -210,10 +219,10 @@ moveEnemy:
 			mov word [di+10], 0  ;update y pos
 			jmp .move
 		.turnLeft:
-			mov word [di+10], 1
+			mov word [di+10], 2
 			jmp .move
 		.turnUp:
-			mov word [di+10], 2
+			mov word [di+10], 1
 			jmp .move
 		.turnDown:
 			mov word [di+10], 3
@@ -402,27 +411,26 @@ collissionsMapa:
         mov ax, [si] ;obtener la pos x del cubo del mapa
         sub ax, 4           ;subtract 3 because of hitbox
         cmp ax, cx ; comparar l popaas dos posiciones
-		mov	ax, 1
-        jg .comparar
+        mov ax, 1
+		jg .comparar
     
         mov ax, word [si] ;axsalirbtract 9 because of hitbox
 		add ax, 3           ;subtract 3 because of hitbox
         cmp ax, cx ; (entityZ+9 > playerZ)
-		mov	ax, 1
-        jle .comparar
+        mov ax, 1
+		jle .comparar
 
 		mov ax, word [si+2] ;obtener la pos x del cubo del mapa
         sub ax, 4           ;subtract 3 because of hitbox
         cmp ax, dx ; comparar l popaas dos posiciones
-		mov	ax, 1
-        jg .comparar
+        mov ax, 1
+		jg .comparar
     
         mov ax, word [si+2] ;axsalirbtract 9 because of hitbox
 		add ax, 3           ;subtract 3 because of hitbox
         cmp ax, dx ; (entityZ+9 > playerZ)
-		mov	ax, 1
-        jle .comparar
-
+        mov ax, 1
+		jle .comparar
 		mov cx, word[di+2]
 		mov dx, word[di+4]
 		mov	ax, 0
@@ -573,7 +581,7 @@ enemy1:
 	enemy_PosZ dw 0x10                      ;4 pos Z
 	enemy_AnimC dw 0                       	;6 animation counter
 	enemy_act	dw 0						;8 activation counter
-	enemy_dir	dw 1						;10 direction counter
+	enemy_dir	dw 0						;10 direction counter
 	enemy_life dw 1							;12
 	enemy_bullet dw 30						;14
 	enemy_bullet_entity dw badBullet		;16
@@ -1294,8 +1302,8 @@ map2:
 			dw 36
 			dw 15
 		;106
-			dw 36
-			dw 18
+			dw 0
+			dw 0
 %assign usedMemory ($-$$)
 %assign usableMemory (512*16)
 %warning [usedMemory/usableMemory] Bytes used
