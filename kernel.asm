@@ -160,7 +160,7 @@ moveEnemy:
 		.d2:; choque cuadros arriba
 			cmp bx, 1 ;try to move z-1 if 'w' is pressed and set animation accordingly, test other cases otherwise
 			jne .d3
-			mov bp, enemyImg_back
+			mov bp, enemyImg_front
 			cmp dx,3
 				jnge .turnLeft
 			inc dx
@@ -172,7 +172,7 @@ moveEnemy:
 			cmp dx,40
 				jge .turnRight
 			dec dx
-			mov bp, enemyImg_front
+			mov bp, enemyImg_back
 			call collissionsMapa
 			cmp ax, 0
 				jz .turnRight
