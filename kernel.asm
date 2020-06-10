@@ -9,13 +9,13 @@ call initGraphics
 gameLoop:
     call resetBuffer        ;resetea la pantalla llamada desde buffer.asm	
 	
-	call drawMap
-	
 	mov di, player
     call drawEntity
 	
 	mov di, falcon
 	call drawEntity
+	
+	call drawMap
 	
 	mov dx, [shooting]
 	sub dx, 1
@@ -30,15 +30,6 @@ gameLoop:
 		jz .passEnemy
 	call drawEntity
 
-	; mov si, word [di]
-	; mov di, word [di+16]
-	; mov ax, word [di+10]
-	; cmp ax, 0
-	; 	jz .resetCount
-	; call moveEnemyBala	;
-	; jmp .passEnemy
-	; .resetCount:
-		; mov word [si+14], 10
 	.passEnemy:
 
 	mov dx, [shooting]
@@ -49,6 +40,14 @@ gameLoop:
 	
 	call moveEnemy
 	
+	mov dx, [bad_bullet_active]
+	cmp dx, 0
+		je	.notEnemyBullet
+	mov di, badBullet
+	call drawEntity
+	.notEnemyBullet:
+
+
 	call copyBufferOver ;draw frame to screen
 	call gameControls ;handle control logic
 	
@@ -107,33 +106,19 @@ moveEnemy:
 	mov ax, [di+8]		; seleccionamos el contador de activar de enemy
 	cmp ax, 15			; Cada 20 llamadas de gameloop se mueve el enemigo
 		je .active
-	; mov bx, [di+14]
-	; cmp bx, 0
-	; 	jnz .passEnemyBullet
-
-	; 	mov si, word[di+16]
-	; 	cmp word[si+10], 0
-	; 		jz .fire
-	.passEnemyBullet:
 	inc word [di+8]
 	popa
 	ret
-	.fire:
-		mov si, badBullet
-		mov ax, word[di+2]
-		mov word[si+2] ,ax  ;update x pos
-		mov ax, word[di+4]
-		mov word [si+4] ,ax  ;update y pos
-		mov ax, word[di+10]
-		mov word [si+8] ,ax  ;update direction
-		mov word [di+10] ,1  	 ;update active flag
-		ret
+	
 	
 	.active:
 		mov cx, word[di+2] ;set cx to enemy x
 		mov dx, word[di+4] ;set dx to enemy z
-		dec word [di+14]
 		
+		mov ax, word[di+14] 
+		cmp ax, 0
+			je .fire
+		dec word [di+14]
 	.move:
 		mov bx, word [di+10]	;direction of movement
 		cmp bx, 0 				; choque cuadros derecha
@@ -229,6 +214,22 @@ moveEnemy:
 			jmp .move
 		
 		;
+
+	;
+	.fire:
+		mov si, badBullet
+		mov ax, [si+10]
+		; cmp ax,1
+			; je .passTrigger		
+		mov word[di+14], 50
+		mov word[si+10], 1
+		mov word[si+2], cx
+		mov word[si+4], dx
+		
+		.passTrigger:
+		jmp .move
+		
+		
 ;
 moveBala:
 	mov cx, word [bullet_PosX] ;set cx to bullet x
@@ -271,6 +272,49 @@ moveBala:
 		mov word [shooting] ,0  ;update y pos
 		ret
 
+
+
+;
+moveEnemyBullet:
+	mov cx, word [bullet_PosX] ;set cx to bullet x
+	mov dx, word [bullet_PosZ] ;set dx to bullet z
+	mov bx, word [bullet_dir]	;direction of movement
+	cmp bx, 0 					;0 -> derecha
+		jne .d1
+		cmp cx,0x0+75
+			jge .destroy
+		inc cx
+		jg .back
+	.d1:
+		cmp bx, 1 ;try to move x-1 if 'a' is pressed and set animation accordingly, test other cases otherwise
+		jne .d2
+		cmp cx,0x3
+			jnge .destroy
+		dec cx
+		jg .back
+	.d2:
+		cmp bx, 2 ;try to move z-1 if 'w' is pressed and set animation accordingly, test other cases otherwise
+		jne .d3
+		cmp dx,0x2
+			jnge .destroy
+		dec dx
+		jg .back
+	.d3:
+		cmp dx,0x0+45
+			jge .destroy
+		inc dx
+		jg .back
+		
+	.back:
+		;mov di, word [bullet]
+		call checkForHit
+		mov word [bullet_PosX] ,cx  ;update x pos
+		mov word [bullet_PosZ] ,dx  ;update y pos
+		ret
+
+	.destroy:
+		mov word [shooting] ,0  ;update y pos
+		ret
 
 ;
 checkForHit:
@@ -575,6 +619,7 @@ targetBullet:
 			dw 0
 
 
+;
 enemy1:
 	enemy_Anim dw enemyImg_front          	;0 puntero a animacion
 	enemy_PosX dw 0x35                      ;2 pos X
@@ -583,8 +628,17 @@ enemy1:
 	enemy_act	dw 0						;8 activation counter
 	enemy_dir	dw 0						;10 direction counter
 	enemy_life dw 1							;12
-	enemy_bullet dw 30						;14
-	enemy_bullet_entity dw badBullet		;16
+	enemy_bullet_count dw 50				;14
+	enemy_bullet dw badBullet				;16
+;
+badBullet:
+	bad_bullet_Anim dw bulletImg            ;0 puntero a la animacion
+	bad_bullet_PosX dw 0x35                    ;2 brick pos x
+	bad_bullet_PosZ dw 0x10                    ;4 brick pos z
+	bad_bullet_AnimC dw 0                   ;6 counter animacion
+	bad_bullet_dir dw 0						;8
+	bad_bullet_active dw 0					;10
+
 
 
 
@@ -602,14 +656,6 @@ bullet:
 	bullet_PosZ dw 0                    ;brick pos z
 	bullet_AnimC dw 0                     ;counter animacion
 	bullet_dir dw 0
-
-badBullet:
-	bad_bullet_Anim dw bulletImg            ;0 puntero a la animacion
-	bad_bullet_PosX dw -1                    ;2 brick pos x
-	bad_bullet_PosZ dw -1                    ;4 brick pos z
-	bad_bullet_AnimC dw 0                   ;6 counter animacion
-	bad_bullet_dir dw 0						;8
-	bad_bullet_active dw 0					;10
 
 ;brick estructura
 box:
@@ -1290,11 +1336,12 @@ map2:
 		dw 3
 		dw 3	
 		;102
-			dw 36
-			dw 6
+;Diferentes? 
+			dw 40
+			dw 40
 		;103
-			dw 36
-			dw 9
+			dw 55
+			dw 40
 		;104
 			dw 36
 			dw 12
